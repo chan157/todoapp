@@ -42,17 +42,30 @@
       <ul class="list-group">
         <% for (var i = 0; i < posts.length; i++){ %>
         <li class="list-group-item">
+          <p>글번호 : <%= posts[i]._id%></p>
           <h4> 할일 제목 : <%= posts[i].title %> </h4>
           <p> 할일 마감날짜 : <%= posts[i].date %> </p>
-          <button>삭제</button>
+          <button class="delete" data-id="<%= posts[i]._id%>">삭제</button>
         </li>
         <% } %>
       </ul>
 
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+
     <script>
 
-      $
+      $('.delete').click(function(e){
+        var num_title = e.target.dataset.id;
 
+        $.ajax({
+        method : 'DELETE',
+        url : '/delete',
+        data : {_id : num_title}
+        }).done(function(result){
+          
+        });
+      })
+      
     </script>
 
 

@@ -10,21 +10,15 @@ var db;
 // var mongoConnectionCode = `mongodb+srv://${username}:${password}@cluster0.gsqxt.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`
 // console.log(mongoConnectionCode)
 const MongoClient = require('mongodb').MongoClient;
-MongoClient.connect("mongodb+srv://chan:chan@cluster0.gsqxt.mongodb.net/myFirstDatabase?retryWrites=true&w=majority",
+MongoClient.connect("mongodb+srv://chan:chan@cluster0.gsqxt.mongodb.net/?retryWrites=true&w=majority",
    function(err, client){
     if(err) {
         return console.log(err);
     }
 
     db = client.db('todoapp');
-
-    // db.collection('post').insertOne({이름 : 'John', 나이 : 20}, function(err, result){
-    //     console.log('저장완료');
-    // });
-
     app.listen(8080, function() {
         console.log('listening on 8080')
-        
     });
 })
 
@@ -66,3 +60,10 @@ app.get('/list', function(req, res){
     });
 });
 
+app.delete('/delete', function(req, res) {
+    console.log("Delete 요청 발생", req.body);
+    req.body._id = parseInt(req.body._id);
+    db.collection('post').deleteOne(req.body, function(err, result) {
+        console.log("삭제완료", result);
+    })
+})
