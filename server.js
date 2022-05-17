@@ -1,10 +1,10 @@
-const express = require('express')
-const app = express()
-const bodyParser= require('body-parser')
+const express = require('express');
+const app = express();
+const bodyParser= require('body-parser');
 // const { username, password } = require('config/config.js')
-app.use(bodyParser.urlencoded({extended: true}))
+app.use(bodyParser.urlencoded({extended: true}));
 app.set('view engine', 'ejs');
-
+app.use('/public', express.static('public'));
 var db;
 
 // var mongoConnectionCode = `mongodb+srv://${username}:${password}@cluster0.gsqxt.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`
@@ -24,12 +24,21 @@ MongoClient.connect("mongodb+srv://chan:chan@cluster0.gsqxt.mongodb.net/?retryWr
 
 
 app.get('/', function(req, res) { 
-  res.sendFile(__dirname +'/index.html')
+  res.render('index.ejs')
 })
 
 app.get('/write', function(req, res) { 
-    res.sendFile(__dirname +'/write.html')
+    // res.sendFile(__dirname +'/write.html')
+    res.render('write.ejs')
 });
+
+app.get('/edit/:id', function(req, res) {
+    db.collection('post').findOne({_id : parseInt(req.params.id)}, function(err, result) {
+        console.log(result)
+        res.render('edit.ejs', { post : result})
+    })
+    
+})
 
 app.post('/add', function(req, res){
   res.send('전송완료')
@@ -65,5 +74,14 @@ app.delete('/delete', function(req, res) {
     req.body._id = parseInt(req.body._id);
     db.collection('post').deleteOne(req.body, function(err, result) {
         console.log("삭제완료", result);
+        res.status(200).send({ message : '삭제를 완료하였습니다.'});
     })
+})
+
+app.get('/detail/:id', function(req, res) {
+    db.collection('post').findOne({_id : parseInt(req.params.id)}, function(err, result) {
+        console.log(result)
+        res.render('detail.ejs', { data : result })
+    })
+    
 })
