@@ -101,3 +101,53 @@ app.put('/edit', function(req, res) {
                 res.redirect('/list');
     })
 })
+
+
+
+// 로그인을 위한 준비물들
+const passport = require('passport');
+const LocalStrategy = require('passport-local').Strategy;
+const session = require('express-session');
+
+// app.use(미들웨어)  웹서버는 요청- 응답해주는 머신
+app.use(session({secret : '비밀코드', resave : true, saveUninitialized : false}));
+app.use(passport.initialize());
+app.use(passport.session());
+
+app.get('/login', function(req, res) {
+    res.render('login.ejs')
+})
+
+app.post('/login', passport.authenticate('local', {
+    failureRedirect : '/fail'
+}),function(req, res) {
+    res.redirect('/') 
+});
+
+passport.use(new LocalStrategy({
+    usernameField: 'id',
+    passwordField: 'pw',
+    session: true,              // 로그인 후 세션을 저장할 것인지 여부
+    passReqToCallback: false,   // 특수한 경우에 사용, ID/PW 외에도 test하는 경우
+  }, function (inputID, inputPW, done) {
+        db.collection('login').findOne({ id: inputID }, function (err, result) {
+            if (err) return done(err)
+            if (!result) return done(null, false, { message: '존재하지않는 아이디요' })
+            if (inputPW == result.pw) {
+                return done(null, result)
+            } else {
+                return done(null, false, { message: '비번틀렸어요' })
+            } 
+    })
+  }));
+
+// id를 이용해서 세션을 저장하는 코드, 로그인 성공시 발동
+// 세선 데이터를 만들고  세션의 id정보를 쿠키로 보냄
+passport.serializeUser(function(user, done) {
+    done(null, user.id)
+});
+
+// 이 세션 데이터를 가진 사람을 DB에서 찾아주세요 요청, 마이페이지 접속시 발동
+passport.deserializeUser(function(id, done) {
+    done(null, {})
+});
