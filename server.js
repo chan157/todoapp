@@ -5,6 +5,10 @@ const bodyParser= require('body-parser');
 app.use(bodyParser.urlencoded({extended: true}));
 app.set('view engine', 'ejs');
 app.use('/public', express.static('public'));
+
+const methodOveride = require('method-override')
+app.use(methodOveride('_method'))
+
 var db;
 
 // var mongoConnectionCode = `mongodb+srv://${username}:${password}@cluster0.gsqxt.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`
@@ -84,4 +88,16 @@ app.get('/detail/:id', function(req, res) {
         res.render('detail.ejs', { data : result })
     })
     
+})
+
+app.put('/edit', function(req, res) {
+    // put 요청이 들어오면
+    // form에 담긴 제목 날짜 데이터를 가지고 온다
+    // db.collection에 수정 업데이트를 진행한다.
+    db.collection('post').updateOne({_id : parseInt(req.body.id)},
+        { $set : { title: req.body.title, date: req.body.date} }, function(err, result) {
+                if (err) {console.log(err);}
+                console.log("수정 완료");
+                res.redirect('/list');
+    })
 })

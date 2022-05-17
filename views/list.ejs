@@ -44,7 +44,7 @@
         data : {_id : num_title}
         }).done(function(result){
           console.log('성공했슴당')
-          this.parent('li').fadeOut();
+          push_now.parent('li').fadeOut();
         }).fail(function(xhr, textStatus, errorThrown){
           console.log(xhr, textStatus, errorThrown);
         });
