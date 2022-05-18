@@ -124,6 +124,8 @@ app.post('/login', passport.authenticate('local', {
     res.redirect('/') 
 });
 
+// 로그인을 위한 Session 관련 내용
+
 passport.use(new LocalStrategy({
     usernameField: 'id',
     passwordField: 'pw',
@@ -148,6 +150,28 @@ passport.serializeUser(function(user, done) {
 });
 
 // 이 세션 데이터를 가진 사람을 DB에서 찾아주세요 요청, 마이페이지 접속시 발동
+// deserializeUser : 로그인한 유저의 세션아이디를 바탕으로 개인정보를 db에서 찾는 역할
 passport.deserializeUser(function(id, done) {
-    done(null, {})
+    db.collection('login').findOne({id: id}, function(err, result) {
+        done(null, result)
+    })
+    
 });
+
+
+
+app.get('/mypage', isLogined, function(req, res) {
+    console.log(req.user);
+    res.render('mypage.ejs', {user : req.user})
+});
+
+// 미들웨어 만들기
+function isLogined(req, res, next) {
+    if (req.user) { 
+        next() // 로그인 세션이 있으면 next
+    } else {
+        res.send("로그인 안하셨는데요...?")
+    }
+}
+
+
