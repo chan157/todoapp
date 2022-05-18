@@ -15,15 +15,15 @@ var db;
 
 const MongoClient = require('mongodb').MongoClient;
 MongoClient.connect(process.env.DB_URL,
-   function(err, client){
-    if(err) {
-        return console.log(err);
-    }
+    function(err, client){
+        if(err) {
+            return console.log(err);
+        }
 
-    db = client.db('todoapp');
-    app.listen(process.env.PORT, function() {
-        console.log('listening on http://localhost:8080')
-        
+        db = client.db('todoapp');
+        app.listen(process.env.PORT, function() {
+            console.log('listening on http://localhost:8080')
+            
     });
 })
 
@@ -100,6 +100,13 @@ app.put('/edit', function(req, res) {
                 if (err) {console.log(err);}
                 console.log("수정 완료");
                 res.redirect('/list');
+    })
+})
+
+app.get('/search', (req, res) => {
+    db.collection('post').find({title : req.query.value }).toArray((err, result) => {
+        console.log(result)
+        res.render('result.ejs', { data : result})
     })
 })
 

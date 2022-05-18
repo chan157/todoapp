@@ -41,12 +41,12 @@
     <div class="container">
       <!-- To DO List Area -->
       <ul class="list-group">
-        <% for (var i = 0; i < posts.length; i++){ %>
+        <% for (var i = 0; i < data.length; i++){ %>
         <li class="list-group-item">
-          <p>글번호 : <%= posts[i]._id%></p>
-          <h4> 할일 제목 : <%= posts[i].title %> </h4>
-          <p> 할일 마감날짜 : <%= posts[i].date %> </p>
-          <button class="btn btn-danger delete" data-id="<%= posts[i]._id%>">삭제</button>
+          <p>글번호 : <%= data[i]._id%></p>
+          <h4> 할일 제목 : <%= data[i].title %> </h4>
+          <p> 할일 마감날짜 : <%= data[i].date %> </p>
+          <button class="btn btn-danger delete" data-id="<%= data[i]._id%>">삭제</button>
         </li>
         <% } %>
       </ul>
