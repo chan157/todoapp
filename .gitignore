@@ -4,6 +4,7 @@ package-lock.json
 
 # config
 config
+.env
 
 
 # Logs

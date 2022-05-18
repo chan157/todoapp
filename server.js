@@ -1,7 +1,8 @@
 const express = require('express');
 const app = express();
 const bodyParser= require('body-parser');
-// const { username, password } = require('config/config.js')
+require('dotenv').config()
+
 app.use(bodyParser.urlencoded({extended: true}));
 app.set('view engine', 'ejs');
 app.use('/public', express.static('public'));
@@ -11,18 +12,18 @@ app.use(methodOveride('_method'))
 
 var db;
 
-// var mongoConnectionCode = `mongodb+srv://${username}:${password}@cluster0.gsqxt.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`
-// console.log(mongoConnectionCode)
+
 const MongoClient = require('mongodb').MongoClient;
-MongoClient.connect("mongodb+srv://chan:chan@cluster0.gsqxt.mongodb.net/?retryWrites=true&w=majority",
+MongoClient.connect(process.env.DB_URL,
    function(err, client){
     if(err) {
         return console.log(err);
     }
 
     db = client.db('todoapp');
-    app.listen(8080, function() {
-        console.log('listening on 8080')
+    app.listen(process.env.PORT, function() {
+        console.log('listening on http://localhost:8080')
+        
     });
 })
 
