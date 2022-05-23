@@ -104,9 +104,24 @@ app.put('/edit', function(req, res) {
 })
 
 app.get('/search', (req, res) => {
-    db.collection('post').find({title : req.query.value }).toArray((err, result) => {
+    var searchCondition = [
+        {
+            $search: {
+                index: 'titleSearch',
+                text: {
+                    query: req.query.value,
+                    path: 'title'
+                }
+            }
+        },
+        // { $sort : { _id : 1} },
+        { $limit : 10 },
+        { $project : { title: 1, _id: 0, score: { $meta: "searchScore" } } }
+    ]
+    console.log(req.query)
+    db.collection('post').aggregate(searchCondition).toArray((err, result) => {
         console.log(result)
-        res.render('result.ejs', { data : result})
+        res.render('search.ejs', { data : result})
     })
 })
 
