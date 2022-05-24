@@ -45,25 +45,7 @@ app.get('/edit/:id', function(req, res) {
     
 })
 
-app.post('/add', function(req, res){
-  res.send('전송완료')
-    db.collection('count').findOne({name:'numberOfPost'}, function(err, result){
-        console.log(result)
-        var totalPost = result.totalPost;
-        console.log(totalPost);
-        db.collection('post').insertOne({_id : totalPost + 1, title : req.body.title, date : req.body.date }, function(err, result){
-            if (err) return console.log(err);
-            console.log('저장완료!!');
-            db.collection('count').updateOne({name : 'numberOfPost'},{ $inc : {totalPost:1}}, function(err, result){
-                if (err) return console.log(err);
 
-            });
-        });
-    });
-
-
-
-});
 
 app.get('/list', function(req, res){
     db.collection('post').find().toArray(function(err, result){
@@ -74,14 +56,6 @@ app.get('/list', function(req, res){
     });
 });
 
-app.delete('/delete', function(req, res) {
-    console.log("Delete 요청 발생", req.body);
-    req.body._id = parseInt(req.body._id);
-    db.collection('post').deleteOne(req.body, function(err, result) {
-        console.log("삭제완료", result);
-        res.status(200).send({ message : '삭제를 완료하였습니다.'});
-    })
-})
 
 app.get('/detail/:id', function(req, res) {
     db.collection('post').findOne({_id : parseInt(req.params.id)}, function(err, result) {
@@ -102,6 +76,7 @@ app.put('/edit', function(req, res) {
                 res.redirect('/list');
     })
 })
+
 
 app.get('/search', (req, res) => {
     var searchCondition = [
@@ -181,7 +156,47 @@ passport.deserializeUser(function(id, done) {
     
 });
 
+app.post('/register', function(req, res) {
+    db.collection('login').insertOne({ id : req.body.id, pw : req.body.pw }, function(err, result) {
+        res.redirect('/')
+    })
+})
 
+app.post('/add', function(req, res){
+    console.log(req.user._id)
+    res.send('전송완료')
+      db.collection('count').findOne({name:'numberOfPost'}, function(err, result){
+          console.log(result)
+          var totalPost = result.totalPost;
+          var post = {_id : totalPost + 1, writer : req.user._id, title : req.body.title, date : req.body.date}
+  
+          db.collection('post').insertOne(post, function(err, result){
+              if (err) return console.log(err);
+              console.log('저장완료!!');
+              db.collection('count').updateOne({name : 'numberOfPost'},{ $inc : {totalPost:1}}, function(err, result){
+                  if (err) return console.log(err);
+  
+              });
+          });
+      });
+  });
+
+  
+app.delete('/delete', function(req, res) {
+    console.log("Delete 요청 발생", req.body);
+    console.log(req.body)
+
+    req.body._id = parseInt(req.body._id);
+    var deletePost = { _id : req.body._id, writer : req.user._id }
+
+    
+    db.collection('post').deleteOne(deletePost, function(err, result) {
+        console.log("삭제완료", result);
+        if (err) { console.log(err) };
+        if (result) {console.log(result)};
+        res.status(200).send({ message : '삭제를 완료하였습니다.'});
+    })
+})
 
 app.get('/mypage', isLogined, function(req, res) {
     console.log(req.user);
