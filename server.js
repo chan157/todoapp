@@ -45,8 +45,6 @@ app.get('/edit/:id', function(req, res) {
     
 })
 
-
-
 app.get('/list', function(req, res){
     db.collection('post').find().toArray(function(err, result){
         if (err) return console.log(err);
@@ -213,3 +211,6 @@ function isLogined(req, res, next) {
 }
 
 
+//Router
+app.use('/shop', require('./routes/shop')); // '/shop'경로에 접속하면 router/shop에 등록해줌
+app.use('/board/sub', require('./routes/board'));
