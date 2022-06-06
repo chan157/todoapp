@@ -6,6 +6,8 @@ package-lock.json
 config
 .env
 
+# image file
+*.jpg
 
 # Logs
 logs
